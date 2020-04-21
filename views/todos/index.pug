@@ -1,0 +1,13 @@
+h1 Todos List
+
+a(href="todos/create") Create Todo
+
+form(action="todos/create", method="GET")
+  label Search
+  input(type="text", name="q")
+  
+  button Search
+
+ul 
+  each todo in todos
+    li= todo.name
