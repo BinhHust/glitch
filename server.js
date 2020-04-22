@@ -1,9 +1,10 @@
-// server.js
-// where your node app starts
-
-// we've started you off with Express (https://expressjs.com/)
-// but feel free to use whatever libraries or frameworks you'd like through `package.json`.
 const express = require('express');
+const fs = require('fs');
+
+let todos = JSON.parse(
+  fs.readFileSync(`${__dirname}/db.json`)
+); 
+
 const app = express();
 
 app.set('view engine', 'pug');
@@ -11,12 +12,6 @@ app.set('views', './views');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
-
-let todos = [
-  { id: 1, name: 'Di cho' },
-  { id: 2, name: 'Nau com' },
-  { id: 3, name: 'Hoc tren CoderX' },
-];
 
 
 app.get('/', (request, response) => {
@@ -26,13 +21,15 @@ app.get('/', (request, response) => {
 });
 
 app.get('/todos', (req, res) => {
-  const q = req.query.q;
-  let matchedTodos;
-  if(q) {
-     matchedTodos = todos.filter(todo => todo.name.toLowerCase().includes(q.toLowerCase())); 
-  }
-  res.render('todos/index', {
-    todos: matchedTodos || todos
+  // const q = req.query.q;
+  // let matchedTodos;
+  // if(q) {
+  //    matchedTodos = todos.filter(todo => todo.name.toLowerCase().includes(q.toLowerCase())); 
+  // }
+  fs.writeFile(`${__dirname}/db.json`, JSON.stringify(todos), err => {
+    res.render('todos/index', {
+      todos: todos
+    })
   })
 });
 
@@ -42,8 +39,9 @@ app.get('/todos/create', (req, res) => {
 
 app.post('/todos/create', (req, res) => {
   todos.push(req.body);
-  
-  res.redirect('/todos');
+  fs.writeFile(`${__dirname}/db.json`, JSON.stringify(todos), err => {
+    res.redirect('/todos');
+  })
 });
 
 // listen for requests :)
